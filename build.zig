@@ -15,9 +15,20 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    const req_size = b.option(usize, "req_size", "The Request Size") orelse 4096;
+    const req_size = b.option(usize, "req_size",
+        \\The request size
+        \\                                 On Linux, the maximum size if 0xffff000
+    ) orelse 4096;
     const options = b.addOptions();
     options.addOption(usize, "REQ_SIZE", req_size);
+
+    const http_module = b.addModule("http", .{
+        .source_file = .{ .path = "src/root.zig" },
+        .dependencies = &.{.{
+            .name = "config",
+            .module = options.createModule(),
+        }},
+    });
 
     const lib = b.addStaticLibrary(.{
         .name = "http.zig",
@@ -39,8 +50,8 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    exe.addOptions("config", options);
-
+    // exe.addOptions("config", options);
+    exe.addModule("http", http_module);
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
     // step when running `zig build`).

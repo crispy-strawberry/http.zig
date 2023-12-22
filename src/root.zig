@@ -1,10 +1,8 @@
-const std = @import("std");
-const testing = std.testing;
+//! The http package provides a cross platform
+//! HTTP/1.1 compliant client and server.
 
-export fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
+pub const Headers = @import("headers.zig").Headers;
 
-test "basic add functionality" {
-    try testing.expect(add(3, 7) == 10);
-}
+pub const Request = @import("req.zig").Request;
+
+pub const Server = @import("server.zig").Server;

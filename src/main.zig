@@ -1,7 +1,8 @@
 const std = @import("std");
-const Server = @import("server.zig");
+const http = @import("http");
 
-const Headers = @import("headers.zig").Headers;
+const Server = http.Server;
+const Headers = http.Headers;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const allocator = gpa.allocator();

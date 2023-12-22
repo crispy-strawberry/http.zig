@@ -9,11 +9,14 @@ const StreamServer = net.StreamServer;
 const Address = net.Address;
 const BufferedWriter = std.io.BufferedWriter;
 
+const ListenError = std.os.SocketError || std.os.BindError || std.os.ListenError || std.os.SetSockOptError || std.os.GetSockNameError;
+
 /// An HTTP/1.1 compliant web server
 pub const Server = @This();
 
 socket: StreamServer,
 allocator: std.mem.Allocator,
+
 /// Initializes a `Server`. It takes `StreamServer.Options`
 /// Use `deinit` to deinitialize the `Server`.
 pub fn init(allocator: std.mem.Allocator, options: StreamServer.Options) Server {
@@ -23,7 +26,7 @@ pub fn init(allocator: std.mem.Allocator, options: StreamServer.Options) Server 
     return Server{ .allocator = allocator, .socket = StreamServer.init(options) };
 }
 
-pub fn listen(self: *Server, addr: Address) !void {
+pub fn listen(self: *Server, addr: Address) ListenError!void {
     try self.socket.listen(addr);
 }
 

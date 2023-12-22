@@ -6,8 +6,7 @@ const Headers = @import("headers.zig").Headers;
 const StreamServer = net.StreamServer;
 
 /// A request object
-/// The request takes requests in this formes in this
-/// form.
+/// The request takes requests in this form
 pub const Request = struct {
     stream: net.Stream,
     address: net.Address,
