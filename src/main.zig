@@ -11,7 +11,8 @@ pub fn main() !void {
     var headers = Headers.init(allocator);
     defer headers.deinit();
 
-    try headers.set("Content-Length", "60");
+    // try headers.set("Content-Length", "60");
+    try headers.setContentLength(129786545);
     try headers.set("Content-Type", "text/html; charset=UTF-8");
     try headers.set("Date", "Thursday, 21 December 2023");
 

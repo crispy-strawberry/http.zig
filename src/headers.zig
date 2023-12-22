@@ -39,13 +39,16 @@ pub const Headers = struct {
     }
 
     pub fn setContentLength(self: *Headers, size: usize) Allocator.Error!void {
-        const buffer_value = std.fmt.allocPrint(self.allocator, "{d}", .{size}) catch |err| switch (err) {
-            Allocator.Error.OutOfMemory => return err,
-            else => unreachable,
-        };
-        defer self.allocator.free(buffer_value);
+        // const buffer_value = std.fmt.allocPrint(self.allocator, "{d}", .{size}) catch |err| switch (err) {
+        //     Allocator.Error.OutOfMemory => return err,
+        //     else => unreachable,
+        // };
+        // defer self.allocator.free(buffer_value);
+        var array_buffer: [getFmtBufferSize()]u8 = undefined;
+        const buffer = std.fmt.bufPrintIntToSlice(&array_buffer, size, 10, .lower, .{});
 
-        self.set("Content-Length", buffer_value);
+        // std.debug.print("The buffer size is {}\n{s}\n", .{ getFmtBufferSize(), buffer });
+        try self.set("Content-Length", buffer);
     }
 
     /// Frees all the memory
@@ -62,3 +65,22 @@ pub const Headers = struct {
         self.map.deinit(self.allocator);
     }
 };
+
+/// This a function to calculate the buffer size at compile time.
+/// This should work from 1 bit to 2048 bit machines ༼ つ ◕_◕ ༽つ
+fn getFmtBufferSize() comptime_int {
+    return switch (@typeInfo(usize).Int.bits) {
+        1 => 1,
+        4 => 2,
+        8 => 3,
+        16 => 5,
+        32 => 10,
+        64 => 20,
+        128 => 39,
+        256 => 78,
+        512 => 155,
+        1024 => 309,
+        2048 => 617,
+        else => |bits| 2 * getFmtBufferSize(bits / 2),
+    };
+}
