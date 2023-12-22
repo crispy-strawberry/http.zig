@@ -27,12 +27,18 @@ pub fn listen(self: *Server, addr: Address) !void {
     try self.socket.listen(addr);
 }
 
+/// Stops listening. It is still necessary to call `deinit`
+/// to free all resources.
 pub fn close(self: *Server) void {
     self.socket.close();
 }
 
+/// Release all resources. The `Server` memory becomes `undefined`.
+/// Automatically calls `Server.close`
 pub fn deinit(self: *Server) void {
+    self.close();
     self.socket.deinit();
+    self.* = undefined;
 }
 
 pub fn accept(self: *Server) !void {

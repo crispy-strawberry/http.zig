@@ -2,7 +2,7 @@ const std = @import("std");
 
 const Allocator = std.mem.Allocator;
 
-/// An header object. It internally copies all
+/// A map of headers. It internally copies all
 /// the keys and values added to it by allocating
 /// using the given allocator.
 pub const Headers = struct {
@@ -18,7 +18,7 @@ pub const Headers = struct {
     }
 
     /// Sets `key` to `value`. All keys and values are allocated using the allocator;
-    pub fn set(self: *Headers, key: []const u8, value: []const u8) !void {
+    pub fn set(self: *Headers, key: []const u8, value: []const u8) Allocator.Error!void {
         self.allocated_size += key.len + value.len + 3; // 3 is for the colon, space and newline
         const owned_key = try self.map.allocator.dupe(u8, key);
         const owned_value = try self.map.allocator.dupe(u8, value);
