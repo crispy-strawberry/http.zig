@@ -19,7 +19,7 @@ pub const Headers = struct {
         };
     }
 
-    /// Sets `key` to `value`. All keys and values are allocated using the allocator;
+    /// Sets `key` to `value`. All keys and values are duplicated using the allocator;
     pub fn set(self: *Headers, key: []const u8, value: []const u8) Allocator.Error!void {
         self.allocated_size += key.len + value.len + 3; // 3 is for the colon, space and newline
         const owned_key = try self.allocator.dupe(u8, key);
@@ -38,6 +38,17 @@ pub const Headers = struct {
         return std.fmt.parseUnsigned(usize, len_str, 10) catch null;
     }
 
+    pub fn setContentLength(self: *Headers, size: usize) Allocator.Error!void {
+        const buffer_value = std.fmt.allocPrint(self.allocator, "{d}", .{size}) catch |err| switch (err) {
+            Allocator.Error.OutOfMemory => return err,
+            else => unreachable,
+        };
+        defer self.allocator.free(buffer_value);
+
+        self.set("Content-Length", buffer_value);
+    }
+
+    /// Frees all the memory
     pub fn deinit(self: *Headers) void {
         var iterator = self.map.iterator();
 
