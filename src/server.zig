@@ -7,19 +7,20 @@ const REQ_SIZE: usize = @import("config").REQ_SIZE;
 
 const StreamServer = net.StreamServer;
 const Address = net.Address;
+const BufferedWriter = std.io.BufferedWriter;
 
 /// An HTTP/1.1 compliant web server
 pub const Server = @This();
 
 stream: StreamServer,
-
+allocator: std.mem.Allocator,
 /// Initializes a `Server`. It takes `StreamServer.Options`
 /// Use `deinit` to deinitialize the `Server`.
-pub fn init(options: StreamServer.Options) Server {
+pub fn init(allocator: std.mem.Allocator, options: StreamServer.Options) Server {
     if (@import("builtin").mode == .Debug)
         std.debug.print("The request buffer size is: {}\n", .{REQ_SIZE});
 
-    return Server{ .stream = StreamServer.init(options) };
+    return Server{ .allocator = allocator, .stream = StreamServer.init(options) };
 }
 
 pub fn listen(self: *Server, addr: Address) !void {
@@ -40,10 +41,19 @@ pub fn accept(self: *Server) !void {
 
     var buf: [REQ_SIZE]u8 = undefined;
     const len = try conn.stream.read(buf[0..]);
+
+    // Something weird is happening with FireFox.
+    if (len == 0) return;
+
     std.debug.print("The request size was: {}\n", .{len});
     std.debug.print("The request was: \n{s}\n", .{buf[0..len]});
 
-    try conn.stream.writeAll(
+    // var buffered_writer = createBufferedWriter(2048, conn.stream.writer());
+    // var unbuffered_writer = conn.stream.writer();
+    var buffered_writer = std.io.bufferedWriter(conn.stream.writer());
+    var stream_writer = buffered_writer.writer();
+
+    try stream_writer.writeAll(
         \\HTTP/1.1 200 OK
         \\Date: Mon, 23 May 2005 22:38:34 GMT
         \\Content-Type: text/html; charset=UTF-8
@@ -57,9 +67,15 @@ pub fn accept(self: *Server) !void {
         \\    <title>An Example Page</title>
         \\  </head>
         \\  <body>
-        \\    <h1>My Web Server</h1>
+        \\    <h1>My Web Server 😀😀</h1>
         \\    <p>Hello World, this is a very simple HTML document.</p>
         \\  </body>
         \\</html>    
     );
+
+    try buffered_writer.flush();
+}
+
+pub fn createBufferedWriter(comptime size: usize, underlying_stream: anytype) BufferedWriter(size, @TypeOf(underlying_stream)) {
+    return .{ .unbuffered_writer = underlying_stream };
 }

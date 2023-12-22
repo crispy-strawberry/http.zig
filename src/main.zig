@@ -10,14 +10,14 @@ pub fn main() !void {
     var headers = Headers.init(allocator);
     defer headers.deinit();
 
-    try headers.add("Content-Length", "60");
-    try headers.add("Content-Type", "text/html; charset=UTF-8");
-    try headers.add("Date", "Thursday, 21 December 2023");
+    try headers.set("Content-Length", "60");
+    try headers.set("Content-Type", "text/html; charset=UTF-8");
+    try headers.set("Date", "Thursday, 21 December 2023");
 
     std.debug.print("\nContent-Length is: {?}\n", .{headers.getContentLength()});
     std.debug.print("\nDate is: {?s}\n", .{headers.get("Date")});
 
-    var server = Server.init(.{
+    var server = Server.init(allocator, .{
         .reuse_port = true,
     });
     defer server.deinit();

@@ -9,6 +9,7 @@ pub const Headers = struct {
     map: std.StringHashMap([]const u8),
     allocated_size: usize,
 
+    /// Initialized a new header structure
     pub fn init(allocator: Allocator) Headers {
         return Headers{
             .map = std.StringHashMap([]const u8).init(allocator),
@@ -16,7 +17,8 @@ pub const Headers = struct {
         };
     }
 
-    pub fn add(self: *Headers, key: []const u8, value: []const u8) !void {
+    /// Sets `key` to `value`. All keys and values are allocated using the allocator;
+    pub fn set(self: *Headers, key: []const u8, value: []const u8) !void {
         self.allocated_size += key.len + value.len + 3; // 3 is for the colon, space and newline
         const owned_key = try self.map.allocator.alloc(u8, key.len);
         @memcpy(owned_key, key);
