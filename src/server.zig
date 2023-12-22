@@ -12,7 +12,7 @@ const BufferedWriter = std.io.BufferedWriter;
 /// An HTTP/1.1 compliant web server
 pub const Server = @This();
 
-stream: StreamServer,
+socket: StreamServer,
 allocator: std.mem.Allocator,
 /// Initializes a `Server`. It takes `StreamServer.Options`
 /// Use `deinit` to deinitialize the `Server`.
@@ -20,23 +20,23 @@ pub fn init(allocator: std.mem.Allocator, options: StreamServer.Options) Server 
     if (@import("builtin").mode == .Debug)
         std.debug.print("The request buffer size is: {}\n", .{REQ_SIZE});
 
-    return Server{ .allocator = allocator, .stream = StreamServer.init(options) };
+    return Server{ .allocator = allocator, .socket = StreamServer.init(options) };
 }
 
 pub fn listen(self: *Server, addr: Address) !void {
-    try self.stream.listen(addr);
+    try self.socket.listen(addr);
 }
 
 pub fn close(self: *Server) void {
-    self.stream.close();
+    self.socket.close();
 }
 
 pub fn deinit(self: *Server) void {
-    self.stream.deinit();
+    self.socket.deinit();
 }
 
 pub fn accept(self: *Server) !void {
-    var conn = try self.stream.accept();
+    var conn = try self.socket.accept();
     defer conn.stream.close();
 
     var buf: [REQ_SIZE]u8 = undefined;
@@ -76,6 +76,10 @@ pub fn accept(self: *Server) !void {
     try buffered_writer.flush();
 }
 
-pub fn createBufferedWriter(comptime size: usize, underlying_stream: anytype) BufferedWriter(size, @TypeOf(underlying_stream)) {
+pub fn getRawSocket(self: *const Server) std.os.socket_t {
+    return self.socket.sockfd;
+}
+
+fn createBufferedWriter(comptime s: usize, underlying_stream: anytype) BufferedWriter(s, @TypeOf(underlying_stream)) {
     return .{ .unbuffered_writer = underlying_stream };
 }
