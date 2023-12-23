@@ -1,3 +1,5 @@
+//! An HTTP/1.1 compliant web server
+
 const std = @import("std");
 const net = std.net;
 

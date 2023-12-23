@@ -3,6 +3,12 @@
 
 pub const Headers = @import("headers.zig").Headers;
 
+pub const Method = @import("methods.zig").Method;
+
 pub const Request = @import("req.zig").Request;
 
-pub const Server = @import("server.zig").Server;
+// I can do `pub const Server = @import("server.zig")` but
+// it currently doesn't work well with ZLS
+pub const Server = @import("server.zig");
+
+pub const Client = @import("client.zig").Client;

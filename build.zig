@@ -15,12 +15,14 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    const req_size = b.option(usize, "req_size",
+    const req_size = b.option(usize, "REQ_SIZE",
         \\The request size
         \\                                 On Linux, the maximum size if 0xffff000
     ) orelse 4096;
+    const max_method_size = b.option(u16, "MAX_METHOD_SIZE", "The max http method size.") orelse 24;
     const options = b.addOptions();
     options.addOption(usize, "REQ_SIZE", req_size);
+    options.addOption(u16, "MAX_METHOD_SIZE", max_method_size);
 
     const http_module = b.addModule("http", .{
         .source_file = .{ .path = "src/root.zig" },

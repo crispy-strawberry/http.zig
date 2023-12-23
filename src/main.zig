@@ -3,6 +3,7 @@ const http = @import("http");
 
 const Server = http.Server;
 const Headers = http.Headers;
+const Method = http.Method;
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const allocator = gpa.allocator();

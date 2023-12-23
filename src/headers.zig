@@ -14,7 +14,7 @@ pub const Headers = struct {
     pub fn init(allocator: Allocator) Headers {
         return Headers{
             .allocator = allocator,
-            .map = .{},
+            .map = std.StringHashMapUnmanaged([]const u8){},
             .allocated_size = 0,
         };
     }
