@@ -19,7 +19,7 @@ pub fn build(b: *std.Build) void {
         \\The request size
         \\                                 On Linux, the maximum size if 0xffff000
     ) orelse 4096;
-    const max_method_size = b.option(u16, "MAX_METHOD_SIZE", "The max http method size.") orelse 24;
+    const max_method_size = b.option(u16, "MAX_METHOD_SIZE", "The max http method size. The default is 24 bytes.") orelse 24;
     const options = b.addOptions();
     options.addOption(usize, "REQ_SIZE", req_size);
     options.addOption(u16, "MAX_METHOD_SIZE", max_method_size);
