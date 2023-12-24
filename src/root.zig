@@ -2,7 +2,7 @@
 //! HTTP/1.1 compliant client and server.
 
 pub const Headers = @import("headers.zig").Headers;
-
+pub const Status = @import("status.zig").Status;
 pub const Method = @import("methods.zig").Method;
 
 pub const Request = @import("req.zig").Request;
