@@ -57,7 +57,7 @@ const http = b.dependency("http", .{
 ```
 
 # License
-The library is dual licensed under `MPL` or `APACHE-2.0`.
+The library is dual licensed under `MPL-2.0` or `APACHE-2.0`.
 Choose at your own discretion.
 
 # Contributing 
