@@ -15,8 +15,7 @@ Let's look at how to use the `http` package in your own project.
     .optimize = optimize,
   });
 
-  exe.addModule("http", http.module("http"));
-    
+  exe.addModule("http", http.module("http"));  
   ```
 + Enjoy!
   ```zig
@@ -37,7 +36,6 @@ Let's look at how to use the `http` package in your own project.
       try server.accept();
     }
   }
-    
   ```
 
 ## Options provided by the library
