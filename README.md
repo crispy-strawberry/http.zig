@@ -40,6 +40,24 @@ Let's look at how to use the `http` package in your own project.
     
   ```
 
+## Options provided by the library
+The library provides two options to change the default settings.
+1. Firstly, it provides `REQ_SIZE` to choose the max size of the request stored
+   on the stack. Default is 4kb.
+2. It also provides an option to choose the max size in bytes of the HTTP
+   method. For example, `GET` is 3 bytes and `POST` is 4 bytes. The default
+   maximum size for methods is 24 bytes.
+
+To change these, you can do -
+```zig
+const http = b.dependency("http", .{
+  .target = target,
+  .optimize = optimize,
+  .REQ_SIZE = @as(usize, 2048),
+  .MAX_METHOD_SIZE = @as(u16, 32),
+});
+```
+
 # License
 The library is dual licensed under `MPL` or `APACHE-2.0`.
 Choose at your own discretion.
